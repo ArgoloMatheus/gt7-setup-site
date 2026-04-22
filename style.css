@@ -1,0 +1,265 @@
+/* 
+ * DESIGN SYSTEM & VARIÁVEIS (CSS Custom Properties)
+ * Usamos :root para definir variáveis globais. Isso permite mudar o tema inteiro
+ * (ex: trocar o vermelho pelo azul da Alpine) alterando apenas o valor da variável --accent.
+ * É uma prática moderna que facilita muito a manutenção do código.
+ */
+:root {
+  --bg:        #0A0A0A; /* Preto profundo para fundo */
+  --surface:   #141414; /* Cinza escuro para cards secundários */
+  --surface2:  #1C1C1E; /* Cinza para elementos de UI interativos */
+  --accent:    #E60026; /* Vermelho GT7 - Cor oficial de destaque */
+  --gold:      #C9A84C; /* Dourado para badges e notas importantes */
+  --text:      #F0F0F0; /* Branco suave para não cansar a vista */
+  --text-muted:#888888; /* Cinza para textos menos importantes */
+  --border:    #2A2A2A; /* Cor sutil para bordas */
+  --radius:    4px;
+  --font-title: 'Rajdhani', sans-serif;
+  --font-body:  'Barlow', sans-serif;
+  --font-mono:  'DM Mono', monospace;
+}
+
+/* ── RESET E UTILITÁRIOS ─────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+/* scroll-behavior: smooth faz a página deslizar suavemente ao clicar em links âncora */
+html { scroll-behavior: smooth; }
+body { background: var(--bg); color: var(--text); font-family: var(--font-body); }
+
+.container { max-width: 1100px; margin: 0 auto; padding: 0 24px; }
+.accent    { color: var(--accent); }
+.hidden    { display: none !important; }
+
+/* 
+ * HEADER (Navegação Fixa)
+ * position: sticky faz o cabeçalho "grudar" no topo ao rolar a página.
+ * backdrop-filter: blur(12px) cria o efeito de "vidro fosco" (glassmorphism),
+ * permitindo ver as cores do conteúdo passando por baixo dele de forma elegante.
+ */
+.site-header {
+  position: sticky; top: 0; z-index: 100;
+  background: rgba(10,10,10,0.92);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+}
+.header-inner {
+  max-width: 1100px; margin: 0 auto; padding: 0 24px;
+  height: 60px; display: flex; align-items: center; justify-content: space-between;
+}
+.logo { display: flex; align-items: center; gap: 8px; }
+.logo-gt {
+  font-family: var(--font-title); font-size: 1.4rem; font-weight: 700;
+  color: var(--accent); letter-spacing: 2px;
+}
+.logo-text { font-family: var(--font-title); font-size: 1.2rem; color: var(--text); }
+.header-nav { display: flex; gap: 28px; }
+.header-nav a { color: var(--text-muted); text-decoration: none; font-size: 0.9rem; transition: color .2s; }
+.header-nav a:hover { color: var(--text); }
+
+/* 
+ * HERO (Apresentação Impactante)
+ * A hero define a primeira impressão do usuário.
+ * Usamos um gradiente linear repetido para criar as linhas diagonais de fundo,
+ * que remetem a grades de radiadores ou sinalização de pista.
+ */
+.hero {
+  position: relative; overflow: hidden;
+  padding: 100px 24px;
+  text-align: center;
+  border-bottom: 1px solid var(--border);
+}
+.hero-bg-lines {
+  position: absolute; inset: 0;
+  background-image:
+    repeating-linear-gradient(
+      -45deg,
+      transparent, transparent 60px,
+      rgba(230,0,38,0.03) 60px, rgba(230,0,38,0.03) 61px
+    );
+  pointer-events: none;
+}
+.hero-content { position: relative; max-width: 700px; margin: 0 auto; }
+.hero-eyebrow { color: var(--accent); font-size: 0.8rem; letter-spacing: 4px; text-transform: uppercase; margin-bottom: 16px; }
+
+/* 
+ * clamp(3rem, 7vw, 5.5rem): Tipografia Responsiva Automática.
+ * O título vai variar entre 3rem e 5.5rem dependendo da largura da tela (7vw),
+ * sem precisar de dezenas de media queries.
+ */
+.hero-title { font-family: var(--font-title); font-size: clamp(3rem, 7vw, 5.5rem); font-weight: 700; line-height: 1.05; margin-bottom: 20px; }
+.hero-subtitle { color: var(--text-muted); font-size: 1rem; line-height: 1.7; margin-bottom: 40px; }
+
+/* 
+ * clip-path: polygon()
+ * Cria um recorte diagonal nos cantos do botão, dando sensação de movimento e velocidade.
+ * Os valores definem as coordenadas X e Y dos pontos que formam o polígono.
+ */
+.cta-button {
+  display: inline-block; padding: 14px 40px;
+  background: var(--accent); color: #fff;
+  font-family: var(--font-title); font-size: 1.1rem; font-weight: 700;
+  letter-spacing: 1px; text-decoration: none;
+  border: none; cursor: pointer;
+  clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%);
+  transition: background .2s, transform .15s;
+}
+.cta-button:hover { background: #ff1a35; transform: translateY(-2px); }
+
+/* ── SEÇÕES ────────────────────────────────────── */
+.section-title {
+  font-family: var(--font-title); font-size: 2rem; font-weight: 700;
+  margin-bottom: 40px;
+  padding-bottom: 12px;
+  border-bottom: 2px solid var(--accent);
+  display: inline-block;
+}
+.generator-section { padding: 80px 0; }
+.result-section    { padding: 60px 0; background: var(--surface); }
+.howto-section     { padding: 80px 0; }
+
+/* ── FORMULÁRIO (Interatividade) ────────────────── */
+.form-grid    { display: flex; flex-direction: column; gap: 40px; }
+.form-label   { display: block; font-size: 0.75rem; letter-spacing: 3px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 16px; }
+
+/* 
+ * repeat(auto-fill, minmax(200px, 1fr))
+ * Isso cria uma grade flexível que coloca quantos cards couberem na linha (mínimo 200px),
+ * adaptando-se automaticamente ao tamanho da tela.
+ */
+.car-grid, .track-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 10px;
+}
+.car-card, .track-card {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  padding: 14px 16px;
+  cursor: pointer;
+  transition: border-color .15s, background .15s;
+  position: relative;
+}
+.car-card:hover, .track-card:hover { border-color: #555; }
+.car-card.selected, .track-card.selected {
+  border-color: var(--accent);
+  background: rgba(230,0,38,0.08);
+}
+.car-card__drivetrain {
+  font-family: var(--font-mono); font-size: 0.65rem; font-weight: 500;
+  color: var(--gold); letter-spacing: 2px;
+  margin-bottom: 6px;
+}
+
+/* Badges coloridas usando transparência no background (rgba) */
+.badge { display: inline-block; padding: 2px 8px; font-size: 0.6rem; letter-spacing: 1px; font-weight: 600; text-transform: uppercase; margin-top: 8px; }
+.badge--low    { background: rgba(100,200,100,0.15); color: #6dc96d; border: 1px solid #6dc96d44; }
+.badge--medium { background: rgba(200,170,50,0.15);  color: var(--gold); border: 1px solid #c9a84c44; }
+.badge--high   { background: rgba(230,0,38,0.15);    color: var(--accent); border: 1px solid #e6002644; }
+
+/* accent-color: propriedade moderna que muda a cor principal de elementos nativos (range, checkbox) */
+input[type="range"] {
+  flex: 1; height: 4px;
+  accent-color: var(--accent);
+  cursor: pointer;
+}
+.slider-value { font-family: var(--font-mono); font-size: 0.9rem; color: var(--accent); min-width: 80px; }
+
+.style-buttons { display: flex; gap: 8px; }
+.style-btn {
+  padding: 8px 16px; font-family: var(--font-body); font-size: 0.8rem;
+  background: var(--surface2); color: var(--text-muted);
+  border: 1px solid var(--border); cursor: pointer; transition: all .15s;
+}
+.style-btn:hover  { border-color: #555; color: var(--text); }
+.style-btn.active { border-color: var(--accent); color: var(--accent); background: rgba(230,0,38,0.08); }
+
+.generate-btn {
+  display: flex; align-items: center; gap: 10px;
+  margin: 48px auto 0; padding: 16px 60px;
+  background: var(--accent); color: #fff;
+  font-family: var(--font-title); font-size: 1.3rem; font-weight: 700;
+  letter-spacing: 2px; border: none; cursor: pointer;
+  clip-path: polygon(10px 0%, 100% 0%, calc(100% - 10px) 100%, 0% 100%);
+  transition: background .2s, transform .15s, opacity .2s;
+}
+.generate-btn:hover:not(:disabled) { background: #ff1a35; transform: translateY(-2px); }
+.generate-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+
+/* ── RESULTADO (Cards de Setup) ────────────────── */
+.result-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; flex-wrap: wrap; gap: 16px; }
+.result-meta { display: flex; align-items: center; gap: 12px; }
+
+.pp-note {
+  background: rgba(201,168,76,0.1);
+  border: 1px solid rgba(201,168,76,0.3);
+  border-left: 3px solid var(--gold);
+  padding: 12px 16px;
+  font-size: 0.85rem; color: var(--gold);
+  margin-bottom: 32px;
+}
+
+.setup-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 16px;
+  margin-bottom: 32px;
+}
+.setup-card {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  padding: 20px;
+}
+.card-title {
+  font-family: var(--font-title); font-size: 1rem; font-weight: 600;
+  color: var(--text-muted); letter-spacing: 1px;
+  margin-bottom: 16px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--border);
+}
+.setup-params { display: flex; flex-direction: column; gap: 10px; }
+.param-row { display: flex; justify-content: space-between; align-items: center; }
+
+/* 
+ * Pseudoelementos ::before
+ * Injetamos "F" (Front) e "R" (Rear) via CSS para manter o HTML limpo.
+ * Isso mostra como o CSS pode adicionar conteúdo semântico visual.
+ */
+.param-val {
+  font-family: var(--font-mono); font-size: 0.85rem; color: var(--text);
+  background: rgba(255,255,255,0.05);
+  padding: 3px 10px;
+  min-width: 70px; text-align: center;
+}
+.param-val--front::before { content: "F "; color: var(--text-muted); font-size: 0.7rem; }
+.param-val--rear::before  { content: "R "; color: var(--text-muted); font-size: 0.7rem; }
+
+/* Dica do Engenheiro com borda esquerda de destaque */
+.driver-tip {
+  display: flex; gap: 16px;
+  background: rgba(230,0,38,0.07);
+  border: 1px solid rgba(230,0,38,0.25);
+  border-left: 3px solid var(--accent);
+  padding: 20px;
+}
+
+/* ── COMO USAR & FOOTER ────────────────────────── */
+.howto-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 24px; }
+.howto-item { padding: 28px; background: var(--surface); border: 1px solid var(--border); }
+.howto-num  { font-family: var(--font-mono); font-size: 2rem; color: var(--accent); opacity: 0.5; display: block; margin-bottom: 12px; }
+
+.site-footer { padding: 40px 24px; text-align: center; border-top: 1px solid var(--border); }
+.site-footer p { font-size: 0.8rem; color: var(--text-muted); line-height: 2; }
+
+/* 
+ * RESPONSIVO (Media Queries)
+ * Usamos uma abordagem Desktop-First aqui (estilizamos o grande e ajustamos para o pequeno).
+ * O breakpoint de 600px é o padrão para smartphones modernos.
+ */
+@media (max-width: 600px) {
+  /* No celular, forçamos as grades a terem apenas 1 ou 2 colunas */
+  .car-grid, .track-grid { grid-template-columns: 1fr 1fr; }
+  .setup-cards { grid-template-columns: 1fr; }
+  .result-header { flex-direction: column; }
+  .hero-title { font-size: 2.8rem; }
+  .params-row { flex-direction: column; }
+}

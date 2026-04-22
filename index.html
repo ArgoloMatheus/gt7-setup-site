@@ -1,0 +1,234 @@
+<!-- 
+  ESTRUTURA PRINCIPAL DO SITE
+  Este arquivo HTML define o "esqueleto" do GT7 Setup Lab.
+  A lógica do site está dividida em 3 scripts no final do <body>:
+  1. data.js: Carrega os dados (carros e pistas).
+  2. engine.js: Contém o motor de cálculo do setup.
+  3. app.js: Faz a ponte entre o HTML e a lógica (interatividade).
+-->
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GT7 Setup Lab</title>
+  
+  <!-- 
+    FONTES E PERFORMANCE
+    O 'preconnect' avisa o navegador para abrir uma conexão com o Google Fonts o quanto antes.
+    Isso reduz o tempo de carregamento das fontes Rajdhani, Barlow e DM Mono.
+  -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@600;700&family=Barlow:wght@400;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- 
+    HEADER (Cabeçalho)
+    Usamos a tag semântica <header> para indicar que esta é a área de navegação global.
+  -->
+  <header class="site-header">
+    <div class="header-inner">
+      <div class="logo">
+        <span class="logo-gt">GT7</span>
+        <span class="logo-text">Setup Lab</span>
+      </div>
+      <nav class="header-nav">
+        <!-- Links âncora (#) levam o usuário para seções na mesma página -->
+        <a href="#generator">Gerador</a>
+        <a href="#howto">Como Usar</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- 
+    HERO (Destaque Inicial)
+    A <section> é usada para agrupar conteúdos relacionados a um tema.
+  -->
+  <section class="hero">
+    <!-- aria-hidden="true" esconde elementos puramente visuais de leitores de tela -->
+    <div class="hero-bg-lines" aria-hidden="true"></div>
+    <div class="hero-content">
+      <p class="hero-eyebrow">Gran Turismo 7 — Categoria Gr.3</p>
+      <h1 class="hero-title">Setups <span class="accent">precisos</span><br>para cada pista.</h1>
+      <p class="hero-subtitle">Selecione o carro e a pista. O algoritmo cruza tipo de tração,<br>
+      distribuição de peso e perfil da pista para gerar um setup técnico real.</p>
+      <a href="#generator" class="cta-button">Gerar Setup</a>
+    </div>
+  </section>
+
+  <!-- 
+    SEÇÃO DO GERADOR
+    id="generator": Este ID é usado pelo link da hero para fazer o scroll até aqui.
+  -->
+  <section id="generator" class="generator-section">
+    <div class="container">
+      <h2 class="section-title">Gerador de Setup</h2>
+
+      <div class="form-grid">
+
+        <!-- Seletor de Carro -->
+        <div class="form-group">
+          <label class="form-label">🚗 Carro</label>
+          <!-- id="carGrid": O JavaScript (app.js) usará este ID para injetar a lista de carros vinda de data.js -->
+          <div class="car-grid" id="carGrid">
+            <!-- Populado pelo app.js -->
+          </div>
+        </div>
+
+        <!-- Seletor de Pista -->
+        <div class="form-group">
+          <label class="form-label">🏁 Pista</label>
+          <!-- id="trackGrid": Ponto de conexão para a lista de pistas -->
+          <div class="track-grid" id="trackGrid">
+            <!-- Populado pelo app.js -->
+          </div>
+        </div>
+
+        <!-- Parâmetros Adicionais -->
+        <div class="form-group form-group--params">
+          <label class="form-label">⚙️ Parâmetros</label>
+          <div class="params-row">
+            <div class="param-item">
+              <label class="param-label">Velocidade máx. da maior reta (km/h)</label>
+              <div class="slider-container">
+                <!-- 
+                  input type="range": Cria um slider deslizante.
+                  min/max: Limites do slider.
+                  step: De quanto em quanto o valor pula (ex: 5 em 5 km/h).
+                -->
+                <input type="range" id="topSpeedSlider" min="150" max="400" value="250" step="5">
+                <span class="slider-value" id="topSpeedValue">250 km/h</span>
+              </div>
+            </div>
+            <div class="param-item">
+              <label class="param-label">Estilo de pilotagem</label>
+              <div class="style-buttons">
+                <!-- Atributos data-style: usados pelo JS para identificar qual botão foi clicado -->
+                <button class="style-btn" data-style="aggressive">Agressivo</button>
+                <button class="style-btn active" data-style="balanced">Equilibrado</button>
+                <button class="style-btn" data-style="conservative">Conservador</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- id="generateBtn": O JS escuta o clique neste botão para rodar o motor de cálculo -->
+      <button class="generate-btn" id="generateBtn" disabled>
+        <span class="generate-btn__icon">⚡</span>
+        Gerar Setup
+      </button>
+
+    </div>
+  </section>
+
+  <!-- 
+    SEÇÃO DE RESULTADO
+    Inicia com a classe "hidden" para não ocupar espaço até que um setup seja gerado.
+  -->
+  <section id="result" class="result-section hidden">
+    <div class="container">
+
+      <div class="result-header">
+        <div class="result-meta">
+          <!-- IDs usados para mostrar o nome do carro e pista selecionados no título do resultado -->
+          <span id="resultCarName" class="result-car-name"></span>
+          <span class="result-divider">×</span>
+          <span id="resultTrackName" class="result-track-name"></span>
+        </div>
+        <button class="copy-btn" id="copyBtn">📋 Copiar Setup</button>
+      </div>
+
+      <div class="pp-note" id="ppNote"></div>
+
+      <!-- Cards de Setup: Áreas onde os valores calculados serão injetados -->
+      <div class="setup-cards">
+
+        <div class="setup-card">
+          <h3 class="card-title">📐 Suspensão</h3>
+          <div class="setup-params" id="suspensionParams"></div>
+        </div>
+
+        <div class="setup-card">
+          <h3 class="card-title">🔧 Controle</h3>
+          <div class="setup-params" id="controlParams"></div>
+        </div>
+
+        <div class="setup-card">
+          <h3 class="card-title">🌬️ Aerodinâmica</h3>
+          <div class="setup-params" id="aeroParams"></div>
+        </div>
+
+        <div class="setup-card">
+          <h3 class="card-title">⚡ Transmissão</h3>
+          <div class="setup-params" id="transmissionParams"></div>
+        </div>
+
+        <div class="setup-card">
+          <h3 class="card-title">🔁 Diferencial (LSD)</h3>
+          <div class="setup-params" id="lsdParams"></div>
+        </div>
+
+        <div class="setup-card">
+          <h3 class="card-title">🛑 Freios</h3>
+          <div class="setup-params" id="brakeParams"></div>
+        </div>
+
+      </div>
+
+      <!-- Dica de Pilotagem -->
+      <div class="driver-tip" id="driverTip">
+        <span class="driver-tip__icon">🎙️</span>
+        <div>
+          <p class="driver-tip__label">Dica do Engenheiro</p>
+          <p class="driver-tip__text" id="driverTipText"></p>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- COMO USAR -->
+  <section id="howto" class="howto-section">
+    <div class="container">
+      <h2 class="section-title">Como Usar</h2>
+      <div class="howto-grid">
+        <div class="howto-item">
+          <span class="howto-num">01</span>
+          <h3>Escolha o Carro</h3>
+          <p>Selecione o carro Gr.3 que você vai usar. O algoritmo considera o tipo de tração e a distribuição de peso.</p>
+        </div>
+        <div class="howto-item">
+          <span class="howto-num">02</span>
+          <h3>Escolha a Pista</h3>
+          <p>O perfil de downforce e o tipo de asfalto da pista determinam aerodinâmica e dureza da suspensão.</p>
+        </div>
+        <div class="howto-item">
+          <span class="howto-num">03</span>
+          <h3>Defina a Velocidade</h3>
+          <p>Insira a velocidade máxima da maior reta para calcular o ajuste de transmissão.</p>
+        </div>
+        <div class="howto-item">
+          <span class="howto-num">04</span>
+          <h3>Aplique e Ajuste PP</h3>
+          <p>Aplique o setup no GT7 e use ECU + Lastro para atingir o limite de PP do seu evento.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="site-footer">
+    <p>GT7 Setup Lab — Feito pela comunidade • Categoria Gr.3 MVP</p>
+    <p class="footer-note">Não afiliado à Polyphony Digital ou Sony Interactive Entertainment</p>
+  </footer>
+
+  <!-- Carregamento sequencial dos scripts: dados primeiro, depois o motor, por fim a interface -->
+  <script src="data.js"></script>
+  <script src="engine.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

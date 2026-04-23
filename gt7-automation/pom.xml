@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+         http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <!--
+        IDENTIFICAÇÃO DO PROJETO
+        groupId: identificador da organização (convenção: domínio invertido)
+        artifactId: nome único do projeto dentro da organização
+        version: versão atual. "SNAPSHOT" = em desenvolvimento (não é release final)
+    -->
+    <groupId>com.gt7</groupId>
+    <artifactId>gt7-automation</artifactId>
+    <version>1.0-SNAPSHOT</version>
+    <packaging>jar</packaging>
+
+    <name>GT7 Setup Lab - Automation Suite</name>
+
+    <properties>
+        <!-- 
+            Versão do Java usada para compilar.
+            Em ambientes corporativos, Java 11 ou 17 são os mais usados.
+        -->
+        <java.version>11</java.version>
+        <maven.compiler.source>${java.version}</maven.compiler.source>
+        <maven.compiler.target>${java.version}</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+        <!-- Versões centralizadas aqui para facilitar atualização futura -->
+        <selenium.version>4.18.1</selenium.version>
+        <testng.version>7.9.0</testng.version>
+        <allure.version>2.25.0</allure.version>
+        <webdrivermanager.version>5.7.0</webdrivermanager.version>
+    </properties>
+
+    <dependencies>
+
+        <!--
+            SELENIUM WEBDRIVER
+            O framework que controla o navegador.
+            selenium-java inclui suporte a Chrome, Firefox, Edge, etc.
+        -->
+        <dependency>
+            <groupId>org.seleniumhq.selenium</groupId>
+            <artifactId>selenium-java</artifactId>
+            <version>${selenium.version}</version>
+        </dependency>
+
+        <!--
+            WEBDRIVERMANAGER (Bonigarcia)
+            Elimina a necessidade de baixar manualmente o chromedriver.
+            Em ambientes corporativos, isso evita quebras quando o Chrome atualiza.
+        -->
+        <dependency>
+            <groupId>io.github.bonigarcia</groupId>
+            <artifactId>webdrivermanager</artifactId>
+            <version>${webdrivermanager.version}</version>
+        </dependency>
+
+        <!--
+            TESTNG
+            Framework de testes. Mais poderoso que JUnit para QA:
+            suporta grupos, dependências entre testes, data providers e paralelismo.
+        -->
+        <dependency>
+            <groupId>org.testng</groupId>
+            <artifactId>testng</artifactId>
+            <version>${testng.version}</version>
+        </dependency>
+
+        <!--
+            ALLURE TESTNG
+            Gera relatórios HTML profissionais com screenshots, steps e histórico.
+            É o padrão de relatório em times de QA corporativos.
+        -->
+        <dependency>
+            <groupId>io.qameta.allure</groupId>
+            <artifactId>allure-testng</artifactId>
+            <version>${allure.version}</version>
+        </dependency>
+
+        <!--
+            LOMBOK
+            Reduz código repetitivo: @Getter, @Setter, @Builder.
+            Muito usado em empresas para manter o código limpo.
+        -->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.18.30</version>
+            <scope>provided</scope>
+        </dependency>
+
+    </dependencies>
+
+    <build>
+        <plugins>
+            <!--
+                MAVEN SUREFIRE PLUGIN
+                Responsável por executar os testes durante o build.
+                suiteXmlFiles: aponta qual testng.xml usar.
+                Em CI/CD (Jenkins/GitLab), o comando "mvn test" usa este plugin.
+            -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>3.2.5</version>
+                <configuration>
+                    <suiteXmlFiles>
+                        <suiteXmlFile>src/test/resources/testng.xml</suiteXmlFile>
+                    </suiteXmlFiles>
+                </configuration>
+            </plugin>
+
+            <!--
+                ALLURE MAVEN PLUGIN
+                Gera o relatório HTML após os testes.
+                Comando: mvn allure:report
+            -->
+            <plugin>
+                <groupId>io.qameta.allure</groupId>
+                <artifactId>allure-maven</artifactId>
+                <version>2.12.0</version>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>

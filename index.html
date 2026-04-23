@@ -21,6 +21,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@600;700&family=Barlow:wght@400;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
+  <script src="advisor.js"></script>
 </head>
 <body>
 
@@ -191,8 +192,84 @@
     </div>
   </section>
 
+  <!-- ═══════════════════════════════════════════════════════════════
+       EDITOR DE SETUP
+       O usuário pode editar o setup gerado ou criar um do zero.
+       Os sliders são construídos dinamicamente pelo app.js
+       usando os limites definidos em PARAM_LIMITS (engine.js).
+  ════════════════════════════════════════════════════════════════ -->
+  <section id="editor" class="editor-section hidden">
+    <div class="container">
+
+      <div class="editor-header">
+        <h2 class="section-title">Editor de Setup</h2>
+        <div class="editor-mode-tabs">
+          <button class="mode-tab active" id="tabEditGenerated">
+            ✏️ Editar Gerado
+          </button>
+          <button class="mode-tab" id="tabFromScratch">
+            ➕ Criar do Zero
+          </button>
+        </div>
+      </div>
+
+      <p class="editor-subtitle" id="editorSubtitle">
+        Ajuste os valores do setup gerado. O Advisor atualiza em tempo real.
+      </p>
+
+      <!-- Grade de sliders — populada pelo app.js -->
+      <div class="editor-grid" id="editorGrid"></div>
+
+      <div class="editor-actions">
+        <button class="editor-save-btn" id="editorSaveBtn">
+          💾 Aplicar e Analisar
+        </button>
+        <button class="editor-reset-btn" id="editorResetBtn">
+          ↩️ Restaurar Original
+        </button>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       SETUP ADVISOR (CONSELHEIRO)
+       Exibe alertas e sugestões baseados no setup atual × carro × pista.
+       Populado pelo advisor.js após gerar ou editar um setup.
+  ════════════════════════════════════════════════════════════════ -->
+  <section id="advisor" class="advisor-section hidden">
+    <div class="container">
+
+      <div class="advisor-header">
+        <h2 class="section-title">Setup Advisor</h2>
+
+        <!-- Placar geral do setup -->
+        <div class="advisor-score" id="advisorScore">
+          <div class="score-ring" id="scoreRing">
+            <span class="score-number" id="scoreNumber">--</span>
+          </div>
+          <div class="score-info">
+            <span class="score-label" id="scoreLabel">Analisando...</span>
+            <span class="score-sub" id="scoreSub"></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Lista de alertas — populada pelo app.js -->
+      <div class="advisor-alerts" id="advisorAlerts"></div>
+
+      <!-- Mensagem quando tudo está OK -->
+      <div class="advisor-allok hidden" id="advisorAllOk">
+        <span class="allok-icon">🏆</span>
+        <p>Setup sólido! Nenhum problema crítico detectado para esta combinação de carro e pista.</p>
+      </div>
+
+    </div>
+  </section>
+
   <!-- COMO USAR -->
   <section id="howto" class="howto-section">
+
     <div class="container">
       <h2 class="section-title">Como Usar</h2>
       <div class="howto-grid">

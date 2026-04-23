@@ -182,3 +182,47 @@ function buildDriverTip(car, track) {
  * O app.js chamará a função generateSetup() toda vez que o usuário clicar no botão principal,
  * passando os objetos de carro e pista que o usuário escolheu na interface.
  */
+
+/*
+ * LIMITES DOS PARÂMETROS DO GT7
+ * Usados pelo editor manual para definir min/max de cada slider.
+ * Refletem os limites reais do jogo.
+ */
+const PARAM_LIMITS = {
+  rideHeightFront:  { min: 50,   max: 150,  step: 1,    unit: "mm",   label: "Altura Dianteira" },
+  rideHeightRear:   { min: 50,   max: 150,  step: 1,    unit: "mm",   label: "Altura Traseira" },
+  springFront:      { min: 1.0,  max: 20.0, step: 0.5,  unit: "N/mm", label: "Mola Dianteira" },
+  springRear:       { min: 1.0,  max: 20.0, step: 0.5,  unit: "N/mm", label: "Mola Traseira" },
+  damperCompFront:  { min: 1,    max: 10,   step: 1,    unit: "",     label: "Amort. Comp. Diant." },
+  damperCompRear:   { min: 1,    max: 10,   step: 1,    unit: "",     label: "Amort. Comp. Tras." },
+  damperExtFront:   { min: 1,    max: 10,   step: 1,    unit: "",     label: "Amort. Ext. Diant." },
+  damperExtRear:    { min: 1,    max: 10,   step: 1,    unit: "",     label: "Amort. Ext. Tras." },
+  arbFront:         { min: 1,    max: 10,   step: 1,    unit: "",     label: "ARB Dianteiro" },
+  arbRear:          { min: 1,    max: 10,   step: 1,    unit: "",     label: "ARB Traseiro" },
+  camberFront:      { min: -5.0, max: 0.0,  step: 0.1,  unit: "°",    label: "Câmber Dianteiro" },
+  camberRear:       { min: -5.0, max: 0.0,  step: 0.1,  unit: "°",    label: "Câmber Traseiro" },
+  toeFront:         { min: -2.0, max: 2.0,  step: 0.05, unit: "",     label: "Convergência Diant." },
+  toeRear:          { min: -2.0, max: 2.0,  step: 0.05, unit: "",     label: "Convergência Tras." },
+  downforceFront:   { min: 0,    max: 650,  step: 5,    unit: "",     label: "Downforce Dianteiro" },
+  downforceRear:    { min: 0,    max: 650,  step: 5,    unit: "",     label: "Downforce Traseiro" },
+  brakeBias:        { min: 40,   max: 70,   step: 1,    unit: "%",    label: "Equilíbrio de Freio" },
+  lsdInitial:       { min: 5,    max: 60,   step: 1,    unit: "",     label: "LSD Inicial" },
+  lsdAccel:         { min: 5,    max: 60,   step: 1,    unit: "",     label: "LSD Aceleração" },
+  lsdDecel:         { min: 5,    max: 60,   step: 1,    unit: "",     label: "LSD Desaceleração" },
+  finalGear:        { min: 150,  max: 420,  step: 5,    unit: "km/h", label: "Vel. Final (Trans.)" }
+};
+
+/*
+ * Setup vazio — ponto de partida para criação do zero.
+ * Usa os valores médios de cada parâmetro.
+ */
+function getBlankSetup() {
+  const blank = {};
+  for (const [key, limits] of Object.entries(PARAM_LIMITS)) {
+    blank[key] = parseFloat(((limits.min + limits.max) / 2).toFixed(2));
+  }
+  blank.driverTip = "Setup criado manualmente. Use o Advisor para verificar a compatibilidade.";
+  blank.ppNote = "⚠️ Ajuste ECU e Lastro de Peso até atingir o limite de PP do seu evento.";
+  return blank;
+}
+

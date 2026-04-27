@@ -1,311 +1,568 @@
-<!-- 
-  ESTRUTURA PRINCIPAL DO SITE
-  Este arquivo HTML define o "esqueleto" do GT7 Setup Lab.
-  A lógica do site está dividida em 3 scripts no final do <body>:
-  1. data.js: Carrega os dados (carros e pistas).
-  2. engine.js: Contém o motor de cálculo do setup.
-  3. app.js: Faz a ponte entre o HTML e a lógica (interatividade).
--->
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html class="dark" lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>GT7 Setup Lab</title>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>GT7 Setup Lab | Precision Racing Engineering</title>
   
-  <!-- 
-    FONTES E PERFORMANCE
-    O 'preconnect' avisa o navegador para abrir uma conexão com o Google Fonts o quanto antes.
-    Isso reduz o tempo de carregamento das fontes Rajdhani, Barlow e DM Mono.
-  -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@600;700&family=Barlow:wght@400;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css">
-  <script src="advisor.js"></script>
+  <!-- Fontes e Ícones -->
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700;800;900&family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,FILL@0..1&display=swap" rel="stylesheet"/>
+  
+  <!-- Tailwind via CDN -->
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "race-red": "#E60012",
+            "race-red-dim": "#A3000D",
+            "carbon": "#0A0A0A",
+            "surface-dim": "#111111",
+            "surface-bright": "#1A1A1A",
+            "on-surface": "#E5E2E1",
+            "on-surface-variant": "#9F9D9C",
+            "tech-blue": "#009FE7",
+            "tech-blue-glow": "rgba(0, 159, 231, 0.4)",
+            "primary": "#E60012",
+            "background": "#050505",
+          },
+          "borderRadius": {
+            "none": "0",
+            "sm": "2px",
+            "DEFAULT": "4px",
+            "md": "8px",
+            "lg": "12px",
+            "xl": "16px",
+            "2xl": "24px",
+            "full": "9999px"
+          },
+          "fontFamily": {
+            "display": ["Space Grotesk", "sans-serif"],
+            "body": ["Outfit", "sans-serif"],
+            "mono": ["JetBrains Mono", "monospace"]
+          },
+          "animation": {
+            "pulse-slow": "pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite",
+            "scanline": "scanline 8s linear infinite",
+            "glow": "glow 2s ease-in-out infinite alternate"
+          },
+          "keyframes": {
+            "scanline": {
+              "0%": { transform: "translateY(-100%)" },
+              "100%": { transform: "translateY(1000%)" }
+            },
+            "glow": {
+              "from": { boxShadow: "0 0 10px rgba(230, 0, 18, 0.2)" },
+              "to": { boxShadow: "0 0 20px rgba(230, 0, 18, 0.5)" }
+            }
+          }
+        }
+      }
+    }
+  </script>
+  
+  <style>
+    :root {
+      --primary-glow: rgba(230, 0, 18, 0.4);
+    }
+    
+    body { font-family: 'Outfit', sans-serif; }
+    h1, h2, h3, .font-display { font-family: 'Space Grotesk', sans-serif; }
+    .font-mono { font-family: 'JetBrains Mono', monospace; }
+
+    .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24; }
+    .icon-fill { font-variation-settings: 'FILL' 1; }
+
+    .glass-panel {
+      background: rgba(15, 15, 15, 0.6);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    }
+    
+    .glass-panel-active {
+      background: rgba(25, 25, 25, 0.8);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border: 1px solid rgba(230, 0, 18, 0.4);
+      box-shadow: 0 0 20px rgba(230, 0, 18, 0.15);
+    }
+
+    .premium-btn {
+      position: relative;
+      overflow: hidden;
+      transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+    }
+    .premium-btn:after {
+      content: '';
+      position: absolute;
+      top: 0; left: -100%;
+      width: 100%; height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+      transition: 0.5s;
+    }
+    .premium-btn:hover:after { left: 100%; }
+
+    .text-glow-red { text-shadow: 0 0 10px rgba(230, 0, 18, 0.6); }
+    
+    .telemetry-bar {
+      height: 4px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+    .telemetry-bar-fill {
+      height: 100%;
+      background: #009FE7;
+      transition: width 0.8s cubic-bezier(0.65, 0, 0.35, 1);
+    }
+
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: #E60012; }
+
+    /* Estilo para inputs de range customizados */
+    input[type=range] { -webkit-appearance: none; background: transparent; }
+    input[type=range]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      height: 14px; width: 14px;
+      background: #E60012;
+      border-radius: 2px;
+      cursor: pointer;
+      margin-top: -5px;
+      box-shadow: 0 0 10px rgba(230, 0, 18, 0.5);
+    }
+    input[type=range]::-webkit-slider-runnable-track {
+      width: 100%; height: 4px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 2px;
+    }
+    
+    .scanline-effect {
+      position: absolute; inset: 0;
+      background: linear-gradient(to bottom, transparent, rgba(230,0,18,0.03) 50%, transparent);
+      pointer-events: none;
+      z-index: 50;
+      animation: scanline 10s linear infinite;
+    }
+  </style>
 </head>
-<body>
+<body class="bg-background text-on-surface antialiased selection:bg-race-red selection:text-white min-h-screen flex flex-col overflow-x-hidden">
 
-  <!-- 
-    HEADER (Cabeçalho)
-    Usamos a tag semântica <header> para indicar que esta é a área de navegação global.
-  -->
-  <header class="site-header">
-    <div class="header-inner">
-      <div class="logo">
-        <span class="logo-gt">GT7</span>
-        <span class="logo-text">Setup Lab</span>
+  <!-- HUD/Scanline Overlay -->
+  <div class="scanline-effect"></div>
+
+  <!-- Navegação Global -->
+  <nav class="fixed top-0 left-0 w-full z-[100] flex justify-between items-center px-8 md:px-16 h-20 bg-black/80 backdrop-blur-2xl border-b border-white/5">
+    <div class="flex items-center gap-16">
+      <div class="flex flex-col cursor-pointer" onclick="navigateTo('view-home')">
+        <span class="text-xl font-black italic tracking-tighter text-white font-display">PRECISION <span class="text-race-red">DYNAMICS</span></span>
+        <span class="text-[8px] font-mono text-on-surface-variant tracking-[0.4em] uppercase -mt-1">Racing Engineering Lab</span>
       </div>
-      <nav class="header-nav">
-        <!-- Links âncora (#) levam o usuário para seções na mesma página -->
-        <a href="#generator">Gerador</a>
-        <a href="#howto">Como Usar</a>
-      </nav>
+      <div class="hidden lg:flex items-center gap-10 font-display tracking-tight uppercase text-[11px] font-bold">
+        <a class="text-white hover:text-race-red transition-all flex items-center gap-2 group" href="javascript:void(0)" onclick="navigateTo('view-home')">
+          <span class="w-1.5 h-1.5 rounded-full bg-race-red opacity-0 group-hover:opacity-100 transition-opacity"></span> DASHBOARD
+        </a>
+        <a class="text-on-surface-variant hover:text-race-red transition-all flex items-center gap-2 group" href="javascript:void(0)" onclick="navigateTo('view-selection')">
+          <span class="w-1.5 h-1.5 rounded-full bg-race-red opacity-0 group-hover:opacity-100 transition-opacity"></span> SETUP LAB
+        </a>
+        <a class="text-on-surface-variant hover:text-race-red transition-all flex items-center gap-2 group" href="#">
+          <span class="w-1.5 h-1.5 rounded-full bg-race-red opacity-0 group-hover:opacity-100 transition-opacity"></span> TELEMETRY
+        </a>
+      </div>
     </div>
-  </header>
-
-  <!-- 
-    HERO (Destaque Inicial)
-    A <section> é usada para agrupar conteúdos relacionados a um tema.
-  -->
-  <section class="hero">
-    <!-- aria-hidden="true" esconde elementos puramente visuais de leitores de tela -->
-    <div class="hero-bg-lines" aria-hidden="true"></div>
-    <div class="hero-content">
-      <p class="hero-eyebrow">Gran Turismo 7 — Categoria Gr.3</p>
-      <h1 class="hero-title">Setups <span class="accent">precisos</span><br>para cada pista.</h1>
-      <p class="hero-subtitle">Selecione o carro e a pista. O algoritmo cruza tipo de tração,<br>
-      distribuição de peso e perfil da pista para gerar um setup técnico real.</p>
-      <a href="#generator" class="cta-button">Gerar Setup</a>
+    <div class="flex items-center gap-6">
+      <div class="hidden sm:flex flex-col items-end mr-4">
+        <span class="text-[9px] font-mono text-tech-blue uppercase">Connection: Stable</span>
+        <span class="text-[9px] font-mono text-on-surface-variant uppercase">Latency: 12ms</span>
+      </div>
+      <button class="hover:bg-white/5 p-2 rounded-lg transition-colors text-on-surface-variant hover:text-white"><span class="material-symbols-outlined">settings_input_component</span></button>
+      <div class="w-8 h-8 rounded-full bg-race-red/20 border border-race-red/50 flex items-center justify-center text-race-red">
+        <span class="material-symbols-outlined text-sm icon-fill">person</span>
+      </div>
     </div>
-  </section>
+  </nav>
 
-  <!-- 
-    SEÇÃO DO GERADOR
-    id="generator": Este ID é usado pelo link da hero para fazer o scroll até aqui.
-  -->
-  <section id="generator" class="generator-section">
-    <div class="container">
-      <h2 class="section-title">Gerador de Setup</h2>
-
-      <div class="form-grid">
-
-        <!-- Seletor de Carro -->
-        <div class="form-group">
-          <label class="form-label">🚗 Carro</label>
-          <!-- id="carGrid": O JavaScript (app.js) usará este ID para injetar a lista de carros vinda de data.js -->
-          <div class="car-grid" id="carGrid">
-            <!-- Populado pelo app.js -->
-          </div>
+  <!-- VIEW 1: HOME (DASHBOARD) -->
+  <main id="view-home" class="view flex-grow pt-20">
+    <section class="relative min-h-[90vh] flex flex-col justify-center px-8 md:px-16 max-w-[1600px] mx-auto">
+      <div class="absolute inset-0 z-0 pointer-events-none">
+        <div class="absolute inset-0 bg-gradient-to-r from-background via-background/60 to-transparent z-10"></div>
+        <img alt="Background" class="w-full h-full object-cover opacity-10 grayscale" src="https://images.unsplash.com/photo-1594739433321-2911701b0bbb?auto=format&fit=crop&q=80&w=1600"/>
+      </div>
+      
+      <div class="relative z-20 max-w-4xl flex flex-col gap-8">
+        <div class="flex items-center gap-4">
+          <span class="h-[1px] w-12 bg-race-red"></span>
+          <span class="font-mono text-[10px] text-race-red uppercase tracking-[0.5em]">System Version 2.4.0</span>
         </div>
-
-        <!-- Seletor de Pista -->
-        <div class="form-group">
-          <label class="form-label">🏁 Pista</label>
-          <!-- id="trackGrid": Ponto de conexão para a lista de pistas -->
-          <div class="track-grid" id="trackGrid">
-            <!-- Populado pelo app.js -->
-          </div>
-        </div>
-
-        <!-- Parâmetros Adicionais -->
-        <div class="form-group form-group--params">
-          <label class="form-label">⚙️ Parâmetros</label>
-          <div class="params-row">
-            <div class="param-item">
-              <label class="param-label">Velocidade máx. da maior reta (km/h)</label>
-              <div class="slider-container">
-                <!-- 
-                  input type="range": Cria um slider deslizante.
-                  min/max: Limites do slider.
-                  step: De quanto em quanto o valor pula (ex: 5 em 5 km/h).
-                -->
-                <input type="range" id="topSpeedSlider" min="150" max="400" value="250" step="5">
-                <span class="slider-value" id="topSpeedValue">250 km/h</span>
-              </div>
+        
+        <h1 class="font-display text-[72px] md:text-[96px] leading-[0.95] tracking-tighter font-black text-white uppercase italic">
+          ENGINEERING <br/>
+          <span class="text-on-surface-variant/40">PERFECTION</span>
+        </h1>
+        
+        <p class="font-body text-lg md:text-xl text-on-surface-variant max-w-2xl leading-relaxed">
+          Otimização de chassis orientada por dados para o Gran Turismo 7. <br/>
+          Extraia cada milissegundo com nosso algoritmo de Precision Dynamics.
+        </p>
+        
+        <div class="flex flex-wrap items-center gap-6 mt-4">
+          <button onclick="navigateTo('view-selection')" class="premium-btn bg-race-red text-white font-display text-sm font-bold px-10 py-5 rounded-sm uppercase tracking-[0.2em] hover:bg-race-red-dim transition-all flex items-center gap-3 shadow-[0_0_30px_rgba(230,0,18,0.3)]">
+            Entrar no Laboratório <span class="material-symbols-outlined text-[18px]">bolt</span>
+          </button>
+          <div class="flex items-center gap-8 pl-4 border-l border-white/10">
+            <div class="flex flex-col">
+              <span class="text-2xl font-display font-bold text-white">1.4K+</span>
+              <span class="text-[9px] font-mono text-on-surface-variant uppercase tracking-widest">Active Setups</span>
             </div>
-            <div class="param-item">
-              <label class="param-label">Estilo de pilotagem</label>
-              <div class="style-buttons">
-                <!-- Atributos data-style: usados pelo JS para identificar qual botão foi clicado -->
-                <button class="style-btn" data-style="aggressive">Agressivo</button>
-                <button class="style-btn active" data-style="balanced">Equilibrado</button>
-                <button class="style-btn" data-style="conservative">Conservador</button>
-              </div>
+            <div class="flex flex-col">
+              <span class="text-2xl font-display font-bold text-white">99.8%</span>
+              <span class="text-[9px] font-mono text-on-surface-variant uppercase tracking-widest">Accuracy Rate</span>
             </div>
           </div>
         </div>
-
       </div>
+    </section>
 
-      <!-- id="generateBtn": O JS escuta o clique neste botão para rodar o motor de cálculo -->
-      <button class="generate-btn" id="generateBtn" disabled>
-        <span class="generate-btn__icon">⚡</span>
-        Gerar Setup
-      </button>
-
-    </div>
-  </section>
-
-  <!-- 
-    SEÇÃO DE RESULTADO
-    Inicia com a classe "hidden" para não ocupar espaço até que um setup seja gerado.
-  -->
-  <section id="result" class="result-section hidden">
-    <div class="container">
-
-      <div class="result-header">
-        <div class="result-meta">
-          <!-- IDs usados para mostrar o nome do carro e pista selecionados no título do resultado -->
-          <span id="resultCarName" class="result-car-name"></span>
-          <span class="result-divider">×</span>
-          <span id="resultTrackName" class="result-track-name"></span>
-        </div>
-        <button class="copy-btn" id="copyBtn">📋 Copiar Setup</button>
-      </div>
-
-      <div class="pp-note" id="ppNote"></div>
-
-      <!-- Cards de Setup: Áreas onde os valores calculados serão injetados -->
-      <div class="setup-cards">
-
-        <div class="setup-card">
-          <h3 class="card-title">📐 Suspensão</h3>
-          <div class="setup-params" id="suspensionParams"></div>
-        </div>
-
-        <div class="setup-card">
-          <h3 class="card-title">🔧 Controle</h3>
-          <div class="setup-params" id="controlParams"></div>
-        </div>
-
-        <div class="setup-card">
-          <h3 class="card-title">🌬️ Aerodinâmica</h3>
-          <div class="setup-params" id="aeroParams"></div>
-        </div>
-
-        <div class="setup-card">
-          <h3 class="card-title">⚡ Transmissão</h3>
-          <div class="setup-params" id="transmissionParams"></div>
-        </div>
-
-        <div class="setup-card">
-          <h3 class="card-title">🔁 Diferencial (LSD)</h3>
-          <div class="setup-params" id="lsdParams"></div>
-        </div>
-
-        <div class="setup-card">
-          <h3 class="card-title">🛑 Freios</h3>
-          <div class="setup-params" id="brakeParams"></div>
-        </div>
-
-      </div>
-
-      <!-- Dica de Pilotagem -->
-      <div class="driver-tip" id="driverTip">
-        <span class="driver-tip__icon">🎙️</span>
-        <div>
-          <p class="driver-tip__label">Dica do Engenheiro</p>
-          <p class="driver-tip__text" id="driverTipText"></p>
-        </div>
-      </div>
-
-    </div>
-  </section>
-
-  <!-- ═══════════════════════════════════════════════════════════════
-       EDITOR DE SETUP
-       O usuário pode editar o setup gerado ou criar um do zero.
-       Os sliders são construídos dinamicamente pelo app.js
-       usando os limites definidos em PARAM_LIMITS (engine.js).
-  ════════════════════════════════════════════════════════════════ -->
-  <section id="editor" class="editor-section hidden">
-    <div class="container">
-
-      <div class="editor-header">
-        <h2 class="section-title">Editor de Setup</h2>
-        <div class="editor-mode-tabs">
-          <button class="mode-tab active" id="tabEditGenerated">
-            ✏️ Editar Gerado
-          </button>
-          <button class="mode-tab" id="tabFromScratch">
-            ➕ Criar do Zero
-          </button>
-        </div>
-      </div>
-
-      <p class="editor-subtitle" id="editorSubtitle">
-        Ajuste os valores do setup gerado. O Advisor atualiza em tempo real.
-      </p>
-
-      <!-- Grade de sliders — populada pelo app.js -->
-      <div class="editor-grid" id="editorGrid"></div>
-
-      <div class="editor-actions">
-        <button class="editor-save-btn" id="editorSaveBtn">
-          💾 Aplicar e Analisar
-        </button>
-        <button class="editor-reset-btn" id="editorResetBtn">
-          ↩️ Restaurar Original
-        </button>
-      </div>
-
-    </div>
-  </section>
-
-  <!-- ═══════════════════════════════════════════════════════════════
-       SETUP ADVISOR (CONSELHEIRO)
-       Exibe alertas e sugestões baseados no setup atual × carro × pista.
-       Populado pelo advisor.js após gerar ou editar um setup.
-  ════════════════════════════════════════════════════════════════ -->
-  <section id="advisor" class="advisor-section hidden">
-    <div class="container">
-
-      <div class="advisor-header">
-        <h2 class="section-title">Setup Advisor</h2>
-
-        <!-- Placar geral do setup -->
-        <div class="advisor-score" id="advisorScore">
-          <div class="score-ring" id="scoreRing">
-            <span class="score-number" id="scoreNumber">--</span>
+    <!-- Bento Grid Features -->
+    <section class="py-24 px-8 md:px-16 max-w-[1600px] mx-auto">
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+        <div class="md:col-span-2 glass-panel p-10 rounded-2xl group hover:border-race-red/20 transition-all flex flex-col justify-between h-[320px]">
+          <span class="material-symbols-outlined text-4xl text-race-red icon-fill mb-8">analytics</span>
+          <div>
+            <h3 class="text-2xl font-display font-bold text-white uppercase mb-2">Análise Preditiva</h3>
+            <p class="text-on-surface-variant text-sm leading-relaxed">Nosso motor de cálculo antecipa o comportamento do carro baseado na geometria da suspensão e perfil da pista.</p>
           </div>
-          <div class="score-info">
-            <span class="score-label" id="scoreLabel">Analisando...</span>
-            <span class="score-sub" id="scoreSub"></span>
+        </div>
+        <div class="glass-panel p-10 rounded-2xl group hover:border-tech-blue/20 transition-all flex flex-col justify-between h-[320px]">
+          <span class="material-symbols-outlined text-4xl text-tech-blue mb-8">troubleshoot</span>
+          <div>
+            <h3 class="text-xl font-display font-bold text-white uppercase mb-2">Setup Advisor</h3>
+            <p class="text-on-surface-variant text-xs leading-relaxed">IA de engenharia que detecta erros críticos no seu setup em tempo real.</p>
+          </div>
+        </div>
+        <div class="glass-panel p-10 rounded-2xl group hover:border-white/10 transition-all flex flex-col justify-between h-[320px]">
+          <span class="material-symbols-outlined text-4xl text-on-surface-variant mb-8">memory</span>
+          <div>
+            <h3 class="text-xl font-display font-bold text-white uppercase mb-2">Race Engine</h3>
+            <p class="text-on-surface-variant text-xs leading-relaxed">Processamento multi-variável para balanço de downforce e relações de marcha.</p>
           </div>
         </div>
       </div>
+    </section>
+  </main>
 
-      <!-- Lista de alertas — populada pelo app.js -->
-      <div class="advisor-alerts" id="advisorAlerts"></div>
+  <!-- VIEW 2: SELEÇÃO -->
+  <main id="view-selection" class="view hidden flex-grow pt-24 px-8 md:px-16 max-w-[1600px] mx-auto w-full flex flex-col gap-12 pb-24">
+    <header class="flex flex-col gap-4">
+      <div class="flex items-center gap-3">
+        <span class="px-2 py-0.5 bg-race-red text-[8px] font-mono text-white uppercase tracking-widest rounded-sm">Operational</span>
+        <h1 class="font-display text-4xl text-white uppercase tracking-tighter italic">Engineering <span class="text-on-surface-variant">Lab</span></h1>
+      </div>
+      <div class="h-[1px] w-full bg-white/5"></div>
+    </header>
 
-      <!-- Mensagem quando tudo está OK -->
-      <div class="advisor-allok hidden" id="advisorAllOk">
-        <span class="allok-icon">🏆</span>
-        <p>Setup sólido! Nenhum problema crítico detectado para esta combinação de carro e pista.</p>
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-12">
+      <!-- Coluna da Esquerda: Seleções -->
+      <div class="lg:col-span-8 flex flex-col gap-16">
+        <!-- Passo 1: Carro -->
+        <section class="flex flex-col gap-8">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-4">
+              <span class="text-4xl font-display font-black text-white/10 italic">01</span>
+              <h2 class="font-display text-xl text-white uppercase tracking-widest">Select Platform</h2>
+            </div>
+            <div class="flex gap-2">
+              <div class="w-1 h-1 rounded-full bg-race-red"></div>
+              <div class="w-1 h-1 rounded-full bg-white/10"></div>
+              <div class="w-1 h-1 rounded-full bg-white/10"></div>
+            </div>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4" id="carGrid"></div>
+        </section>
+
+        <!-- Passo 2: Pista -->
+        <section class="flex flex-col gap-8">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-4">
+              <span class="text-4xl font-display font-black text-white/10 italic">02</span>
+              <h2 class="font-display text-xl text-white uppercase tracking-widest">Circuit Environment</h2>
+            </div>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="trackGrid"></div>
+        </section>
       </div>
 
-    </div>
-  </section>
+      <!-- Coluna da Direita: Estilo e Ações -->
+      <div class="lg:col-span-4">
+        <div class="sticky top-28 flex flex-col gap-8">
+          <section class="glass-panel p-8 rounded-2xl flex flex-col gap-8">
+            <div>
+              <h3 class="font-display text-sm text-white uppercase tracking-widest mb-6">Driving Dynamics</h3>
+              <div class="flex flex-col gap-3">
+                <button class="style-btn w-full py-4 px-6 rounded-lg font-display text-[10px] text-on-surface-variant hover:text-white hover:bg-white/5 border border-white/5 transition-all text-left flex justify-between items-center" data-style="conservative">
+                  CONSERVATIVE <span class="material-symbols-outlined text-sm">shield</span>
+                </button>
+                <button class="style-btn active w-full py-4 px-6 rounded-lg bg-race-red/10 text-race-red border border-race-red/30 font-display text-[10px] transition-all text-left flex justify-between items-center" data-style="balanced">
+                  BALANCED <span class="material-symbols-outlined text-sm icon-fill">balance</span>
+                </button>
+                <button class="style-btn w-full py-4 px-6 rounded-lg font-display text-[10px] text-on-surface-variant hover:text-white hover:bg-white/5 border border-white/5 transition-all text-left flex justify-between items-center" data-style="aggressive">
+                  AGGRESSIVE <span class="material-symbols-outlined text-sm">speed</span>
+                </button>
+              </div>
+            </div>
 
-  <!-- COMO USAR -->
-  <section id="howto" class="howto-section">
+            <div class="h-[1px] bg-white/5"></div>
 
-    <div class="container">
-      <h2 class="section-title">Como Usar</h2>
-      <div class="howto-grid">
-        <div class="howto-item">
-          <span class="howto-num">01</span>
-          <h3>Escolha o Carro</h3>
-          <p>Selecione o carro Gr.3 que você vai usar. O algoritmo considera o tipo de tração e a distribuição de peso.</p>
-        </div>
-        <div class="howto-item">
-          <span class="howto-num">02</span>
-          <h3>Escolha a Pista</h3>
-          <p>O perfil de downforce e o tipo de asfalto da pista determinam aerodinâmica e dureza da suspensão.</p>
-        </div>
-        <div class="howto-item">
-          <span class="howto-num">03</span>
-          <h3>Defina a Velocidade</h3>
-          <p>Insira a velocidade máxima da maior reta para calcular o ajuste de transmissão.</p>
-        </div>
-        <div class="howto-item">
-          <span class="howto-num">04</span>
-          <h3>Aplique e Ajuste PP</h3>
-          <p>Aplique o setup no GT7 e use ECU + Lastro para atingir o limite de PP do seu evento.</p>
+            <div class="flex flex-col gap-4">
+              <button id="generateBtn" disabled class="premium-btn w-full py-5 bg-race-red text-white font-display text-xs font-bold rounded-lg uppercase tracking-[0.2em] disabled:opacity-30 disabled:cursor-not-allowed hover:bg-race-red-dim shadow-[0_0_20px_rgba(230,0,18,0.2)] flex items-center justify-center gap-3">
+                Process Setup <span class="material-symbols-outlined">settings_suggest</span>
+              </button>
+              <p class="text-[9px] font-mono text-on-surface-variant text-center uppercase">Algorithm: PD-Engine v4.2</p>
+            </div>
+          </section>
+
+          <!-- Status Panel -->
+          <div class="glass-panel p-6 rounded-xl border-l-4 border-tech-blue">
+            <h4 class="text-[10px] font-mono text-tech-blue uppercase mb-2">System Status</h4>
+            <div class="space-y-2">
+              <div class="flex justify-between text-[9px] font-mono">
+                <span class="text-on-surface-variant uppercase">Vehicle Data:</span>
+                <span id="statusCar" class="text-white">WAITING...</span>
+              </div>
+              <div class="flex justify-between text-[9px] font-mono">
+                <span class="text-on-surface-variant uppercase">Track Map:</span>
+                <span id="statusTrack" class="text-white">WAITING...</span>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
-  </section>
+  </main>
 
-  <!-- FOOTER -->
-  <footer class="site-footer">
-    <p>GT7 Setup Lab — Feito pela comunidade • Categoria Gr.3 MVP</p>
-    <p class="footer-note">Não afiliado à Polyphony Digital ou Sony Interactive Entertainment</p>
+  <!-- VIEW 3: RESULTADO -->
+  <main id="view-result" class="view hidden flex-grow w-full max-w-[1600px] mx-auto px-8 md:px-16 py-12 flex flex-col gap-12 pt-28 pb-32">
+    <!-- Header de Resultado -->
+    <header class="flex flex-col md:flex-row justify-between items-start md:items-end gap-8">
+      <div class="flex flex-col gap-4">
+        <div class="flex items-center gap-3">
+          <span class="w-12 h-[1px] bg-race-red"></span>
+          <span class="font-mono text-[9px] text-race-red uppercase tracking-[0.4em]">Optimized Configuration</span>
+        </div>
+        <h1 class="font-display text-5xl md:text-7xl font-black text-white italic uppercase tracking-tighter" id="resultCarName">CAR NAME</h1>
+        <div class="flex items-center gap-6">
+          <div class="flex items-center gap-2 text-on-surface-variant font-mono text-[10px] uppercase">
+            <span class="material-symbols-outlined text-[14px]">location_on</span> <span id="resultTrackName">TRACK NAME</span>
+          </div>
+          <div class="w-[1px] h-3 bg-white/10"></div>
+          <div class="flex items-center gap-2 text-tech-blue font-mono text-[10px] uppercase">
+            <span class="material-symbols-outlined text-[14px]">tune</span> <span id="resultStyleName">BALANCED</span>
+          </div>
+        </div>
+      </div>
+      
+      <div class="flex gap-4">
+        <button onclick="navigateTo('view-selection')" class="px-8 py-4 glass-panel text-[10px] font-display font-bold uppercase tracking-widest text-white hover:bg-white/5 rounded-lg transition-all">
+          New Analysis
+        </button>
+        <button id="copyBtn" class="px-8 py-4 bg-white text-black text-[10px] font-display font-bold uppercase tracking-widest rounded-lg hover:bg-on-surface transition-all flex items-center gap-2">
+          <span class="material-symbols-outlined text-[18px]">content_copy</span> Export Data
+        </button>
+      </div>
+    </header>
+
+    <!-- Grid de Dados e Telemetria -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-12">
+      <!-- Painéis de Ajustes (8 colunas) -->
+      <div class="lg:col-span-8 flex flex-col gap-8">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6" id="setupCards">
+          <!-- Categorias de Setup -->
+          <div class="glass-panel p-8 rounded-2xl border-t border-white/5 flex flex-col gap-6">
+            <div class="flex items-center justify-between border-b border-white/5 pb-4">
+              <h3 class="font-display text-xs text-white uppercase tracking-widest flex items-center gap-3">
+                <span class="material-symbols-outlined text-race-red">directions_car</span> Suspension
+              </h3>
+              <span class="text-[9px] font-mono text-on-surface-variant">GEO-01</span>
+            </div>
+            <div class="flex flex-col gap-1" id="suspensionParams"></div>
+          </div>
+
+          <div class="glass-panel p-8 rounded-2xl border-t border-white/5 flex flex-col gap-6">
+            <div class="flex items-center justify-between border-b border-white/5 pb-4">
+              <h3 class="font-display text-xs text-white uppercase tracking-widest flex items-center gap-3">
+                <span class="material-symbols-outlined text-tech-blue">air</span> Aerodynamics
+              </h3>
+              <span class="text-[9px] font-mono text-on-surface-variant">AERO-04</span>
+            </div>
+            <div class="flex flex-col gap-1" id="aeroParams"></div>
+          </div>
+
+          <div class="glass-panel p-8 rounded-2xl border-t border-white/5 flex flex-col gap-6">
+            <div class="flex items-center justify-between border-b border-white/5 pb-4">
+              <h3 class="font-display text-xs text-white uppercase tracking-widest flex items-center gap-3">
+                <span class="material-symbols-outlined text-on-surface-variant">settings_input_hdmi</span> Transmission
+              </h3>
+              <span class="text-[9px] font-mono text-on-surface-variant">GEAR-02</span>
+            </div>
+            <div class="flex flex-col gap-1" id="transmissionParams"></div>
+          </div>
+
+          <div class="glass-panel p-8 rounded-2xl border-t border-white/5 flex flex-col gap-6">
+            <div class="flex items-center justify-between border-b border-white/5 pb-4">
+              <h3 class="font-display text-xs text-white uppercase tracking-widest flex items-center gap-3">
+                <span class="material-symbols-outlined text-orange-500">published_with_changes</span> Differential
+              </h3>
+              <span class="text-[9px] font-mono text-on-surface-variant">LSD-01</span>
+            </div>
+            <div class="flex flex-col gap-1" id="lsdParams"></div>
+          </div>
+        </div>
+
+        <!-- Dica do Engenheiro -->
+        <div class="glass-panel p-8 rounded-2xl border-l-4 border-race-red bg-race-red/5 flex items-start gap-6">
+          <div class="w-14 h-14 rounded-full bg-race-red/20 flex items-center justify-center text-race-red shrink-0 border border-race-red/20">
+            <span class="material-symbols-outlined text-3xl icon-fill">psychology</span>
+          </div>
+          <div class="flex flex-col gap-2">
+            <h4 class="font-display text-[10px] text-race-red uppercase tracking-[0.3em]">Engineering Insight</h4>
+            <p class="font-body text-on-surface leading-relaxed italic" id="driverTipText">---</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Lado Direito: Advisor e Telemetria (4 colunas) -->
+      <div class="lg:col-span-4 flex flex-col gap-8">
+        <!-- Setup Advisor -->
+        <section id="advisor" class="glass-panel p-8 rounded-2xl border border-white/5 relative overflow-hidden">
+          <div class="absolute top-0 right-0 p-4 opacity-5 font-display text-8xl italic font-black">AI</div>
+          
+          <div class="flex items-center justify-between mb-8">
+            <h3 class="font-display text-[10px] text-on-surface-variant uppercase tracking-[0.4em]">Setup Advisor</h3>
+            <span class="w-2 h-2 rounded-full bg-tech-blue animate-pulse"></span>
+          </div>
+
+          <div class="flex items-end gap-4 mb-10">
+            <div class="text-[80px] font-display font-black leading-[0.8] italic text-white tracking-tighter" id="scoreNumber">92</div>
+            <div class="flex flex-col mb-1">
+              <span class="text-xs font-display font-bold text-race-red uppercase" id="scoreLabel">PERFECT BALANCE</span>
+              <span class="text-[9px] font-mono text-on-surface-variant uppercase" id="scoreSub">SCORE RATING</span>
+            </div>
+          </div>
+
+          <div class="flex flex-col gap-4" id="advisorAlerts"></div>
+          
+          <div class="hidden mt-8 p-4 bg-tech-blue/10 border border-tech-blue/20 rounded-lg flex items-center gap-3" id="advisorAllOk">
+            <span class="material-symbols-outlined text-tech-blue">verified</span>
+            <span class="text-[10px] font-display text-white uppercase tracking-widest">Configuration Verified</span>
+          </div>
+        </section>
+
+        <!-- Live Telemetry Simulator -->
+        <div class="glass-panel p-8 rounded-2xl flex flex-col gap-8 border-t border-white/5">
+          <div class="flex items-center justify-between">
+            <h3 class="font-display text-[10px] text-on-surface-variant uppercase tracking-[0.4em]">Live Telemetry</h3>
+            <span class="text-[9px] font-mono text-tech-blue uppercase">Simulated</span>
+          </div>
+          
+          <div class="space-y-6">
+            <div class="flex flex-col gap-2">
+              <div class="flex justify-between text-[10px] font-mono">
+                <span class="text-on-surface-variant uppercase">Front Load</span>
+                <span class="text-white" id="telemetryFront">--%</span>
+              </div>
+              <div class="telemetry-bar"><div class="telemetry-bar-fill" id="barFront" style="width: 0%"></div></div>
+            </div>
+            <div class="flex flex-col gap-2">
+              <div class="flex justify-between text-[10px] font-mono">
+                <span class="text-on-surface-variant uppercase">Rear Load</span>
+                <span class="text-white" id="telemetryRear">--%</span>
+              </div>
+              <div class="telemetry-bar"><div class="telemetry-bar-fill bg-race-red" id="barRear" style="width: 0%"></div></div>
+            </div>
+            <div class="flex flex-col gap-2">
+              <div class="flex justify-between text-[10px] font-mono">
+                <span class="text-on-surface-variant uppercase">Aero Efficiency</span>
+                <span class="text-white" id="telemetryAero">--%</span>
+              </div>
+              <div class="telemetry-bar"><div class="telemetry-bar-fill bg-green-500" id="barAero" style="width: 0%"></div></div>
+            </div>
+          </div>
+
+          <div class="mt-4 pt-4 border-t border-white/5 grid grid-cols-2 gap-4">
+            <div class="flex flex-col">
+              <span class="text-[8px] font-mono text-on-surface-variant uppercase">Cornering Force</span>
+              <span class="text-sm font-display font-bold text-white">2.84 G</span>
+            </div>
+            <div class="flex flex-col">
+              <span class="text-[8px] font-mono text-on-surface-variant uppercase">Braking Distance</span>
+              <span class="text-sm font-display font-bold text-white">142 M</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Seção de Edição Técnica -->
+    <section id="editor" class="mt-16 border-t border-white/5 pt-16">
+      <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-12 gap-6">
+        <div class="flex flex-col gap-2">
+          <h2 class="font-display text-4xl text-white uppercase italic tracking-tighter">Technical <span class="text-on-surface-variant">Workbench</span></h2>
+          <p class="text-xs text-on-surface-variant font-body">Refine as especificações geradas para o seu estilo individual.</p>
+        </div>
+        <div class="flex glass-panel p-1 rounded-lg">
+          <button class="mode-tab px-6 py-2 rounded-md font-display text-[10px] uppercase tracking-widest transition-all active bg-white text-black" id="tabEditGenerated">Refine AI Setup</button>
+          <button class="mode-tab px-6 py-2 rounded-md font-display text-[10px] uppercase tracking-widest transition-all text-on-surface-variant hover:text-white" id="tabFromScratch">Empty Blueprint</button>
+        </div>
+      </div>
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6" id="editorGrid"></div>
+      
+      <!-- Footer de Ação do Editor -->
+      <div class="fixed bottom-0 left-0 w-full bg-black/90 backdrop-blur-3xl border-t border-white/10 py-6 px-12 z-[150] transform translate-y-full transition-transform duration-500" id="editorStickyBar">
+        <div class="max-w-[1600px] mx-auto flex justify-between items-center">
+          <div class="flex items-center gap-6">
+            <div class="flex flex-col">
+              <span class="text-[8px] font-mono text-on-surface-variant uppercase">Configuration Delta</span>
+              <span class="text-xs font-display text-tech-blue uppercase" id="editDelta">Unsaved Changes Detected</span>
+            </div>
+            <div class="w-[1px] h-8 bg-white/10"></div>
+            <div class="flex items-center gap-2 text-[10px] font-mono text-on-surface-variant uppercase">
+              <span class="w-1.5 h-1.5 rounded-full bg-tech-blue"></span> Live Monitoring Active
+            </div>
+          </div>
+          <div class="flex gap-4">
+            <button class="px-8 py-3 glass-panel text-white font-display text-[10px] uppercase tracking-widest rounded-lg hover:bg-white/5 transition-all" id="editorResetBtn">Restore AI Base</button>
+            <button class="px-10 py-3 bg-race-red text-white font-display text-[10px] font-bold uppercase tracking-[0.2em] rounded-lg hover:bg-race-red-dim shadow-[0_0_20px_rgba(230,0,18,0.3)] transition-all" id="editorSaveBtn">Commit Changes</button>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="mt-auto py-12 px-8 md:px-16 border-t border-white/5 bg-black/50">
+    <div class="max-w-[1600px] mx-auto flex flex-col md:flex-row justify-between items-center gap-8">
+      <div class="flex flex-col gap-1">
+        <span class="text-sm font-display font-black italic text-white uppercase">PRECISION <span class="text-race-red">DYNAMICS</span></span>
+        <span class="text-[9px] font-mono text-on-surface-variant uppercase">© 2026 Racing Engineering Systems Ltd.</span>
+      </div>
+      <div class="flex gap-8 text-[9px] font-mono text-on-surface-variant uppercase tracking-widest">
+        <a href="#" class="hover:text-race-red transition-colors">Documentation</a>
+        <a href="#" class="hover:text-race-red transition-colors">GT7 Telemetry API</a>
+        <a href="#" class="hover:text-race-red transition-colors">Privacy Protocol</a>
+      </div>
+    </div>
   </footer>
 
-  <!-- Carregamento sequencial dos scripts: dados primeiro, depois o motor, por fim a interface -->
   <script src="data.js"></script>
   <script src="engine.js"></script>
+  <script src="advisor.js"></script>
   <script src="app.js"></script>
 </body>
 </html>

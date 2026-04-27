@@ -1,95 +1,81 @@
 /* 
- * ARQUIVO DE DADOS (DATABASE)
- * Este arquivo funciona como o "banco de dados" do nosso laboratório.
- * Aqui centralizamos todas as informações técnicas dos carros e das pistas.
- * Ter esses dados separados facilita a manutenção: se um novo carro for lançado no jogo,
- * basta adicioná-lo aqui sem precisar mexer na lógica de cálculo ou na interface.
+ * ARQUIVO DE DADOS (DATABASE) - MODELOS REAIS GT7 (COM ASSETS)
  */
 
-/* 
- * ARRAY DE CARROS (CARS)
- * Separamos os carros em um array de objetos para que possamos percorrer essa lista 
- * e criar os cards na tela automaticamente. Cada objeto contém "metadados" que o 
- * motor de cálculo (engine.js) usará para decidir a rigidez da suspensão e outros ajustes.
- */
 const CARS = [
   {
     id: "porsche_911_rsr",
-    name: "Porsche 911 RSR (991)",
+    name: "Porsche 911 RSR (991) '17",
     manufacturer: "Porsche",
     category: "Gr.3",
-    // drivetrain: tipo de tração. "RR" = motor e tração traseira. 
-    // Carros RR tendem a ser instáveis na entrada da curva (oversteer).
     drivetrain: "RR",        
     enginePos: "REAR",
-    weightKg: 1200,
-    // weightDistFront/Rear: porcentagem de distribuição de peso.
-    // O Porsche tem 62% do peso atrás, o que exige molas traseiras mais fortes.
+    weightKg: 1243,
     weightDistFront: 38,     
     weightDistRear: 62,
-    // ppBase: Pontos de Performance base. Útil para referência de balanceamento.
-    ppBase: 550,
-    notes: "Motor traseiro cria instabilidade no lift-off. Exige técnica de frenagem."
+    ppBase: 730,
+    notes: "O rei da frenagem. O motor traseiro exige precisão na entrada de curva.",
+    image: "https://i.redd.it/6i65gwkrnxde1.jpeg"
   },
   {
     id: "ferrari_458_gt3",
-    name: "Ferrari 458 GT3",
+    name: "Ferrari 458 Italia GT3 '13",
     manufacturer: "Ferrari",
     category: "Gr.3",
-    // "MR" = Motor Central, Tração Traseira. É o layout mais equilibrado para pista.
     drivetrain: "MR",
     enginePos: "MID",
-    weightKg: 1220,
+    weightKg: 1215,
     weightDistFront: 43,
     weightDistRear: 57,
-    ppBase: 548,
-    notes: "Motor central = equilíbrio natural. Sensível ao camber traseiro."
+    ppBase: 725,
+    notes: "Equilíbrio perfeito. O motor V8 central oferece uma rotação natural incrível.",
+    image: "https://www.gran-turismo.com/common/dist/gt7/carlist/assets/car2158_2_01-DMf6M2F3.jpg"
   },
   {
     id: "amg_gt3",
-    name: "Mercedes AMG GT3",
-    manufacturer: "Mercedes",
+    name: "Mercedes-AMG GT3 '16",
+    manufacturer: "Mercedes-Benz",
     category: "Gr.3",
-    // "FR" = Motor Dianteiro, Tração Traseira. Estilo clássico "nariz pesado".
     drivetrain: "FR",
     enginePos: "FRONT",
-    weightKg: 1285,
+    weightKg: 1320,
     weightDistFront: 52,
     weightDistRear: 48,
-    ppBase: 545,
-    notes: "FR clássico. Subviragem crônica se mal configurado."
+    ppBase: 722,
+    notes: "Poderoso V8 dianteiro. Exige cuidado com a subviragem em curvas lentas.",
+    image: "https://hips.hearstapps.com/hmg-prod/amv-prod-cad-assets/images/16q1/665019/mercedes-amg-gt3-race-car-first-drive-review-car-and-driver-photo-666972-s-original.jpg"
   },
   {
     id: "subaru_wrx_gr3",
     name: "Subaru WRX Gr.3",
     manufacturer: "Subaru",
     category: "Gr.3",
-    // "4WD" = Tração nas 4 rodas. Muita tração na saída, mas tende a "espalhar" na curva.
     drivetrain: "4WD",
     enginePos: "FRONT",
-    weightKg: 1300,
+    weightKg: 1280,
     weightDistFront: 50,
     weightDistRear: 50,
-    ppBase: 542,
-    notes: "4WD tem subviragem natural. Mover lastro para traseira ajuda a rotação."
+    ppBase: 718,
+    notes: "Tração total. Excelente estabilidade em reaceleração, mas 'espalha' na entrada.",
+    image: "https://www.gran-turismo.com/common/dist/gt7/carlist/assets/car2186_2_01-Bh95kT3O.jpg"
   },
   {
     id: "megane_gr3",
     name: "Renault Sport Mégane Gr.3",
-    manufacturer: "Renault",
+    manufacturer: "Renault Sport",
     category: "Gr.3",
-    // "FF" = Motor e Tração Dianteira. Desafio técnico para evitar desgaste de pneus frontais.
     drivetrain: "FF",
     enginePos: "FRONT",
-    weightKg: 1175,
+    weightKg: 1200,
     weightDistFront: 62,
     weightDistRear: 38,
-    ppBase: 535,
-    notes: "FF se beneficia de trail braking. Não force o diferencial."
+    ppBase: 710,
+    notes: "Rápido em curvas técnicas. O desafio é gerenciar o desgaste dos pneus dianteiros.",
+    image: "https://static.wikia.nocookie.net/gran-turismo/images/0/0b/Renault_Sport_M%C3%A9gane_Trophy_%2711.jpg/revision/latest?cb=20220906000236"
   },
   {
     id: "bmw_m6_gt3",
-    name: "BMW M6 GT3",
+    name: "BMW M6 GT3 Endurance '16",
     manufacturer: "BMW",
     category: "Gr.3",
     drivetrain: "FR",
@@ -97,81 +83,80 @@ const CARS = [
     weightKg: 1300,
     weightDistFront: 50,
     weightDistRear: 50,
-    ppBase: 544,
-    notes: "Equilibrado entre os FR. Responde bem a ajustes de diferencial."
+    ppBase: 724,
+    notes: "Base de entre-eixos longa. Muito estável em curvas de alta velocidade.",
+    image: "https://imagedelivery.net/nkaANmEhdg2ZZ4vhQHp4TQ/79764c5a-10fe-4b33-77d3-5c37abba3300/public"
   },
   {
     id: "aston_vantage_gt3",
-    name: "Aston Martin Vantage GT3",
+    name: "Aston Martin Vantage V12 GT3 '12",
     manufacturer: "Aston Martin",
     category: "Gr.3",
     drivetrain: "FR",
     enginePos: "FRONT",
-    weightKg: 1295,
+    weightKg: 1250,
     weightDistFront: 51,
     weightDistRear: 49,
-    ppBase: 543,
-    notes: "Similar ao AMG. Ligeiramente mais neutro na traseira."
+    ppBase: 723,
+    notes: "Som do V12 glorioso. Torque massivo que exige controle de tração preciso.",
+    image: "https://static.wikia.nocookie.net/gran-turismo/images/9/93/Aston_Martin_V12_Vantage_GT3_%2712.jpg/revision/latest?cb=20221003125644"
   },
   {
     id: "lamborghini_huracan_gt3",
-    name: "Lamborghini Huracán GT3",
+    name: "Lamborghini Huracán GT3 '15",
     manufacturer: "Lamborghini",
     category: "Gr.3",
     drivetrain: "MR",
     enginePos: "MID",
-    weightKg: 1252,
+    weightKg: 1230,
     weightDistFront: 40,
     weightDistRear: 60,
-    ppBase: 547,
-    notes: "Massa traseira elevada. Barra antirrolagem dianteira rígida é essencial."
+    ppBase: 728,
+    notes: "Agressivo e rápido. O centro de gravidade baixo permite mudanças de direção rápidas.",
+    image: "https://www.lamborghini.com/sites/it-en/files/DAM/lamborghini/news/2022/05_03_lancio_gt3_evo2/cover_m.jpg"
   },
   {
     id: "mclaren_650s_gt3",
-    name: "McLaren 650S GT3",
+    name: "McLaren 650S GT3 '15",
     manufacturer: "McLaren",
     category: "Gr.3",
     drivetrain: "MR",
     enginePos: "MID",
-    weightKg: 1300,
+    weightKg: 1240,
     weightDistFront: 42,
     weightDistRear: 58,
-    ppBase: 546,
-    notes: "MR bem equilibrado. Downforce traseiro crítico em pistas técnicas."
+    ppBase: 726,
+    notes: "Eficiência aerodinâmica. Excelente em pistas com curvas de raio longo.",
+    image: "https://static.wikia.nocookie.net/gran-turismo/images/9/9f/McLaren_650S_GT3_%2715.jpg/revision/latest?cb=20220930185156"
   }
 ];
 
-/* 
- * ARRAY DE PISTAS (TRACKS)
- * Assim como os carros, as pistas têm características que moldam o setup.
- * Pistas rápidas pedem aerodinâmica baixa, pistas onduladas pedem suspensão macia.
- */
 const TRACKS = [
   {
     id: "sardegna_a",
-    name: "Sardegna Road Track A",
+    name: "Sardegna - Road Track A",
     country: "Itália",
-    // downforce: define a necessidade de pressão aerodinâmica. LOW = foco em velocidade final.
     downforce: "LOW",        
-    // surface: tipo de asfalto. SMOOTH = asfalto liso, permite suspensão mais rígida e baixa.
     surface: "SMOOTH",       
-    // longestStraightM: comprimento da maior reta em metros. Define o ajuste de marchas.
     longestStraightM: 1800,
-    // hasBumps: indica se há zebras altas ou ondulações fortes que podem desestabilizar o carro.
+    targetSpeed: 290,
     hasBumps: false,
     circuitType: "PERMANENT",
-    description: "Pista de alta velocidade. Downforce baixo prioriza top speed."
+    description: "Pista técnica e rápida sob o sol da Sardenha.",
+    image: "assets/gt7_sardegna_track_1777168856140.png"
   },
   {
     id: "le_mans",
-    name: "Circuit de la Sarthe (Le Mans)",
+    name: "Circuit de la Sarthe",
     country: "França",
     downforce: "LOW",
     surface: "SMOOTH",
     longestStraightM: 5900,
+    targetSpeed: 340,
     hasBumps: false,
     circuitType: "PERMANENT",
-    description: "Maior reta do calendário. Máxima velocidade final."
+    description: "A lendária reta Mulsanne exige velocidade final extrema.",
+    image: "assets/gt7_lemans_track_1777168867639.png"
   },
   {
     id: "monza",
@@ -180,21 +165,24 @@ const TRACKS = [
     downforce: "LOW",
     surface: "SMOOTH",
     longestStraightM: 1150,
+    targetSpeed: 310,
     hasBumps: false,
     circuitType: "PERMANENT",
-    description: "Templo da velocidade. Poucas curvas, muito foco em tração."
+    description: "O Templo da Velocidade. Foco total em tração e frenagem.",
+    image: "assets/gt7_monza_track_1777168883607.png"
   },
   {
     id: "nurburgring_nordschleife",
     name: "Nürburgring Nordschleife",
     country: "Alemanha",
-    // HIGH downforce e BUMPY surface: exigem um carro "alto e macio" para não saltar nas irregularidades.
     downforce: "HIGH",
     surface: "BUMPY",
     longestStraightM: 450,
+    targetSpeed: 270,
     hasBumps: true,
     circuitType: "MIXED",
-    description: "Inferno Verde. Suspensão macia e downforce alto são obrigatórios."
+    description: "O Inferno Verde. 20km de puro desafio técnico.",
+    image: "assets/gt7_nordschleife_track_1777168686856.png"
   },
   {
     id: "spa",
@@ -203,59 +191,62 @@ const TRACKS = [
     downforce: "HIGH",
     surface: "MIXED",
     longestStraightM: 740,
+    targetSpeed: 280,
     hasBumps: true,
     circuitType: "PERMANENT",
-    description: "Curvas de alta velocidade exigem downforce e estabilidade."
+    description: "A mítica Eau Rouge testa a coragem de qualquer piloto.",
+    image: "assets/gt7_spa_track_1777168718779.png"
   },
   {
     id: "mount_panorama",
-    name: "Mount Panorama",
+    name: "Mount Panorama Motor Racing Circuit",
     country: "Austrália",
     downforce: "HIGH",
     surface: "MIXED",
     longestStraightM: 680,
+    targetSpeed: 280,
     hasBumps: true,
     circuitType: "HILLCLIMB",
-    description: "Subidas e descidas bruscas. Suspensão precisa absorver mudanças de elevação."
+    description: "Subidas íngremes e descidas perigosas em Bathurst.",
+    image: "assets/gt7_mount_panorama_track_1777168733435.png"
   },
   {
     id: "tokyo_expressway",
-    name: "Tokyo Expressway",
+    name: "Tokyo Expressway - Central",
     country: "Japão",
     downforce: "MEDIUM",
     surface: "SMOOTH",
     longestStraightM: 420,
+    targetSpeed: 270,
     hasBumps: false,
     circuitType: "STREET",
-    description: "Pista urbana técnica. Equilíbrio entre downforce e mobilidade."
+    description: "Corridas noturnas entre os prédios de Tóquio.",
+    image: "assets/gt7_tokyo_track_1777168899661.png"
   },
   {
     id: "trial_mountain",
-    name: "Trial Mountain",
+    name: "Trial Mountain Circuit",
     country: "Japão",
     downforce: "MEDIUM",
     surface: "MIXED",
     longestStraightM: 380,
+    targetSpeed: 260,
     hasBumps: true,
     circuitType: "PERMANENT",
-    description: "Pista clássica do GT. Boa para testar equilíbrio geral do setup."
+    description: "Um clássico do Gran Turismo renovado para a nova geração.",
+    image: "assets/gt7_trial_mountain_track_1777168916667.png"
   },
   {
     id: "dragon_trail",
-    name: "Dragon Trail Seaside",
+    name: "Dragon Trail - Seaside",
     country: "Croácia",
     downforce: "MEDIUM",
     surface: "SMOOTH",
     longestStraightM: 510,
+    targetSpeed: 280,
     hasBumps: false,
     circuitType: "PERMANENT",
-    description: "Pista rápida e fluida. Setup equilibrado é o caminho certo."
+    description: "A 'Chicane da Morte' é o ponto alto desta pista croata.",
+    image: "https://images.unsplash.com/photo-1552519507-da3b142c6e3d?auto=format&fit=crop&q=80&w=800"
   }
 ];
-
-/*
- * COMO ESTES DADOS SÃO CONSUMIDOS?
- * O arquivo engine.js vai importar esses arrays. Quando o usuário clica em "Gerar",
- * o motor de cálculo olha, por exemplo, o "drivetrain" do carro e o "surface" da pista
- * para aplicar as fórmulas matemáticas e gerar os valores de suspensão e diferencial.
- */

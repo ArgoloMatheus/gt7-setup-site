@@ -432,3 +432,42 @@ input[type="range"] {
   .editor-save-btn, .editor-reset-btn { width: 100%; text-align: center; }
 }
 
+/* ── ESTILOS DE NAVEGAÇÃO ENTRE PÁGINAS ── */
+.view {
+  min-height: calc(100vh - 120px);
+  animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.back-link {
+  background: transparent;
+  border: none;
+  color: var(--accent);
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 10px 0;
+  display: inline-block;
+  transition: opacity 0.2s;
+  margin-bottom: 20px;
+}
+.back-link:hover { opacity: 0.8; text-decoration: underline; }
+
+.view-header {
+  margin-bottom: 40px;
+}
+
+.result-page-header {
+  background: var(--surface);
+  padding: 20px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.result-page-header .back-link {
+  margin-bottom: 0;
+}
